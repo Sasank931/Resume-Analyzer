@@ -1,21 +1,24 @@
 package com.resume.analyzer.controller;
 
 import com.resume.analyzer.model.Resume;
+import com.resume.analyzer.model.User;
 import com.resume.analyzer.repository.ResumeRepository;
+import com.resume.analyzer.repository.UserRepository;
 import com.resume.analyzer.service.PdfReaderService;
 import com.resume.analyzer.service.SkillAnalyzerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import com.resume.analyzer.payload.ApiResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@Controller
-@RequestMapping("/resume")
+@RestController
+@RequestMapping("/api/resume")
+@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173"}, allowCredentials = "true")
 public class ResumeController {
 
     @Autowired
@@ -27,25 +30,20 @@ public class ResumeController {
     @Autowired
     private ResumeRepository resumeRepository;
 
-    @GetMapping
-    public String resumeRoot() {
-        return "redirect:/";
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/upload")
-    public String uploadResume(@RequestParam("file") MultipartFile file, 
-                             @RequestParam("jobRole") String jobRole,
-                             RedirectAttributes redirectAttributes) {
+    public ResponseEntity<?> uploadResume(@RequestParam("file") MultipartFile file, 
+                                          @RequestParam("jobRole") String jobRole,
+                                          HttpSession session) {
         if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Please select a file to upload.");
-            return "redirect:/";
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Please select a file to upload."));
         }
 
-        // Check if the file is a PDF
         String contentType = file.getContentType();
         if (contentType == null || !contentType.equals("application/pdf")) {
-            redirectAttributes.addFlashAttribute("error", "Please upload a valid PDF resume.");
-            return "redirect:/";
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Please upload a valid PDF resume."));
         }
 
         try {
@@ -66,21 +64,35 @@ public class ResumeController {
             resume.setMissingSkills(missingSkills);
             resume.setSuggestions(suggestions);
 
+            // Get the current user from session
+            User user = (User) session.getAttribute("user");
+            if (user != null) {
+                // Re-fetch user from repo to ensure it's attached to the persistence context
+                User managedUser = userRepository.findById(user.getId()).orElse(null);
+                resume.setUser(managedUser);
+            }
+
             Resume savedResume = resumeRepository.save(resume);
-            
-            redirectAttributes.addFlashAttribute("success", "Resume analyzed successfully.");
-            return "redirect:/resume/result/" + savedResume.getId();
+            return ResponseEntity.ok(savedResume);
 
         } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("error", "Error reading PDF: " + e.getMessage());
-            return "redirect:/";
+            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error reading PDF: " + e.getMessage()));
         }
     }
 
-    @GetMapping("/result/{id}")
-    public String showResult(@PathVariable Long id, Model model) {
-        Resume resume = resumeRepository.findById(id).orElseThrow(() -> new RuntimeException("Resume not found"));
-        model.addAttribute("resume", resume);
-        return "result";
+    @GetMapping("/history")
+    public ResponseEntity<?> getUserHistory(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return ResponseEntity.ok(resumeRepository.findByUser(user));
+        }
+        return ResponseEntity.status(401).body(new ApiResponse(false, "User not authenticated"));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getResumeResult(@PathVariable Long id) {
+        return resumeRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

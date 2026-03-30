@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Login | Smart Resume Analyzer</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+            <div class="col-md-6 col-lg-4 text-center">
+                <div class="card p-5 animate-fade-in border-0 shadow-lg rounded-4">
+                    <!-- App Logo & Title -->
+                    <div class="mb-4">
+                        <i class="bi bi-shield-lock-fill text-primary display-3 mb-3"></i>
+                        <h2 class="fw-bold text-dark">Welcome Back</h2>
+                        <p class="text-muted">Login to access your dashboard</p>
+                    </div>
+
+                    <!-- Logout Feedback -->
+                    <div th:if="${param.logout}" class="alert alert-success border-0 rounded-3 mb-4 py-2">
+                        <i class="bi bi-check-circle-fill me-2"></i> Successfully logged out.
+                    </div>
+
+                    <!-- Registration Success Feedback -->
+                    <div th:if="${success}" class="alert alert-success border-0 rounded-3 mb-4 py-2">
+                        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${success}">Success</span>
+                    </div>
+
+                    <!-- Error Feedback -->
+                    <div th:if="${param.error}" class="alert alert-danger border-0 rounded-3 mb-4 py-2">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Invalid username or password.
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <form th:action="@{/login}" method="post" class="text-start">
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-bold small text-uppercase text-muted">Username</label>
+                            <input type="text" id="username" name="username" class="form-control form-control-lg border-0 bg-light rounded-3" placeholder="Enter username" required autofocus>
+                        </div>
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold small text-uppercase text-muted">Password</label>
+                            <input type="password" id="password" name="password" class="form-control form-control-lg border-0 bg-light rounded-3" placeholder="Enter password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm rounded-3">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-5 pt-4 border-top text-muted">
+                        <p class="mb-2">Don't have an account? <a href="/register" class="text-primary fw-bold text-decoration-none">Register here</a></p>
+                        <p class="small mb-0 text-muted">B.Tech Mini Project 2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
