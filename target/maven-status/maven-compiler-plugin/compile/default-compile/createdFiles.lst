@@ -1,0 +1,7 @@
+com\resume\analyzer\service\SkillAnalyzerService.class
+com\resume\analyzer\service\PdfReaderService.class
+com\resume\analyzer\controller\HomeController.class
+com\resume\analyzer\controller\ResumeController.class
+com\resume\analyzer\repository\ResumeRepository.class
+com\resume\analyzer\model\Resume.class
+com\resume\analyzer\ResumeAnalyzerApplication.class

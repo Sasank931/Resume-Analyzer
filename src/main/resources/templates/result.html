@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Analysis Dashboard | Smart Resume Analyzer</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Success Message -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4 border-0 shadow-sm rounded-4 py-3" role="alert">
+            <i class="bi bi-check-circle-fill me-3 fs-4"></i>
+            <div class="fw-bold" th:text="${success}">Success message</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Dashboard Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h2 class="fw-bold text-primary mb-1">Resume Analysis Result</h2>
+                <p class="text-muted">
+                    <i class="bi bi-briefcase-fill me-1"></i> Role: <span class="fw-bold" th:text="${resume.jobRole}">Role</span> | 
+                    <i class="bi bi-file-earmark-pdf me-1"></i> <span th:text="${resume.fileName}">filename.pdf</span>
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/" class="btn btn-outline-primary shadow-sm rounded-pill">
+                    <i class="bi bi-arrow-left me-1"></i> Analyze Another
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Score & Readiness Card -->
+            <div class="col-lg-4">
+                <div class="card h-100 p-4 text-center border-0 shadow-sm rounded-4">
+                    <h5 class="fw-bold mb-4 text-secondary">Interview Readiness</h5>
+                    <div class="score-circle mb-3" 
+                         th:style="'border-color: ' + (${resume.score < 40} ? 'var(--danger-color)' : (${resume.score <= 70} ? 'var(--warning-color)' : 'var(--success-color)'))">
+                        <span class="display-4 fw-bold" th:text="${resume.score + '%'}">0%</span>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6 class="fw-bold mb-2 text-muted">Current Level</h6>
+                        <span class="badge fs-5 px-4 py-2 mb-3 rounded-pill shadow-sm" 
+                              th:classappend="${resume.readinessLevel == 'Beginner'} ? 'bg-danger' : (${resume.readinessLevel == 'Intermediate'} ? 'bg-warning text-dark' : 'bg-success')"
+                              th:text="${resume.readinessLevel}">
+                            Level
+                        </span>
+                        
+                        <div class="progress mb-2 mt-3" style="height: 10px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" 
+                                 th:style="'width: ' + ${resume.score} + '%; background-color: ' + (${resume.score < 40} ? 'var(--danger-color)' : (${resume.score <= 70} ? 'var(--warning-color)' : 'var(--success-color)'))"
+                                 th:aria-valuenow="${resume.score}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Details -->
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <!-- Analysis Summary -->
+                    <div class="col-12">
+                        <div class="card p-4 bg-white border-0 shadow-sm rounded-4">
+                            <h5 class="fw-bold mb-2 text-dark">
+                                <i class="bi bi-journal-text me-2 text-primary"></i> Analysis Summary
+                            </h5>
+                            <p class="mb-0 fs-5">
+                                Your profile is <span class="fw-bold text-primary" th:text="${resume.score + '%'}">0%</span> ready for the 
+                                <span class="fw-bold" th:text="${resume.jobRole}">Job Role</span> position.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Found Skills -->
+                    <div class="col-md-6">
+                        <div class="card p-4 h-100 border-0 shadow-sm rounded-4">
+                            <h5 class="fw-bold mb-3 text-success">
+                                <i class="bi bi-check-circle-fill me-2"></i> Matched Skills
+                            </h5>
+                            <hr class="mt-0 mb-3 opacity-10">
+                            <div th:if="${resume.foundSkills.isEmpty()}" class="text-muted small italic">
+                                No matching skills detected for this specific role.
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span th:each="skill : ${resume.foundSkills}" 
+                                      class="badge bg-success badge-skill shadow-sm border-0">
+                                    <i class="bi bi-check2 me-1"></i> <span th:text="${skill}">Skill</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Missing Skills -->
+                    <div class="col-md-6">
+                        <div class="card p-4 h-100 border-0 shadow-sm rounded-4">
+                            <h5 class="fw-bold mb-3 text-danger">
+                                <i class="bi bi-x-circle-fill me-2"></i> Missing Skills
+                            </h5>
+                            <hr class="mt-0 mb-3 opacity-10">
+                            <div th:if="${resume.missingSkills.isEmpty()}" class="text-success small fw-bold">
+                                <i class="bi bi-stars me-1"></i> You have all the core skills for this role!
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span th:each="skill : ${resume.missingSkills}" 
+                                      class="badge bg-danger badge-skill shadow-sm border-0">
+                                    <i class="bi bi-plus-circle me-1"></i> <span th:text="${skill}">Skill</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Improvement Suggestions -->
+                    <div class="col-12">
+                        <div class="card p-4 border-0 shadow-sm rounded-4">
+                            <h5 class="fw-bold mb-3 text-warning">
+                                <i class="bi bi-lightbulb-fill me-2"></i> How to Improve
+                            </h5>
+                            <hr class="mt-0 mb-3 opacity-10">
+                            <div th:if="${resume.suggestions.isEmpty()}">
+                                <p class="mb-0 text-success fw-bold">Excellent preparation! Your resume aligns perfectly with the requirements.</p>
+                            </div>
+                            <div th:if="${!resume.suggestions.isEmpty()}">
+                                <p class="mb-3 fw-bold text-secondary">Boost your profile by focusing on these areas:</p>
+                                <div class="list-group list-group-flush">
+                                    <div th:each="suggest : ${resume.suggestions}" class="list-group-item px-0 border-0 bg-transparent py-2 d-flex align-items-center">
+                                        <i class="bi bi-arrow-right-circle-fill text-primary me-3 fs-5"></i>
+                                        <span>Focus on mastering <strong class="text-dark" th:text="${suggest}">Skill</strong> through hands-on projects.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
