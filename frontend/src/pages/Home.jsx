@@ -33,7 +33,7 @@ const Home = () => {
       const data = await analyzerService.analyze(formData);
       setResult(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to analyze resume. Please ensure the backend is running.');
+      setError(err.message || 'Failed to analyze resume. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }

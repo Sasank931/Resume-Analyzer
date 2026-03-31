@@ -9,12 +9,17 @@ const api = axios.create({
 export const analyzerService = {
   analyze: async (formData) => {
     try {
-      const response = await api.post('/analyze', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await fetch(`${API_URL}/api/analyze`, {
+        method: "POST",
+        body: formData,
       });
-      return response.data;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || `Server error: ${response.status}`);
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Analysis failed:", error);
       throw error;

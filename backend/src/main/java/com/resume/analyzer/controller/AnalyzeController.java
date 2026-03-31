@@ -24,15 +24,19 @@ public class AnalyzeController {
     private SkillAnalyzerService skillAnalyzerService;
 
     @PostMapping("/analyze")
-    public ResponseEntity<?> analyzeResume(@RequestParam("file") MultipartFile file, 
-                                          @RequestParam("jobRole") String jobRole) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Please select a file to upload."));
+    public ResponseEntity<?> analyzeResume(@RequestParam(value = "file", required = false) MultipartFile file, 
+                                          @RequestParam(value = "jobRole", required = false) String jobRole) {
+        
+        System.out.println("File received: " + (file != null ? file.getOriginalFilename() : "null"));
+        System.out.println("Job role received: " + jobRole);
+
+        if (file == null || file.isEmpty() || jobRole == null || jobRole.isEmpty()) {
+            return ResponseEntity.badRequest().body("File or jobRole missing");
         }
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.equals("application/pdf")) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Please upload a valid PDF resume."));
+            return ResponseEntity.badRequest().body("Please upload a valid PDF resume.");
         }
 
         try {
