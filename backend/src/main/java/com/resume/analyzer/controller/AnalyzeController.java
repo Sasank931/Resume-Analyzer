@@ -13,6 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.resume.analyzer.model.Resume;
+import com.resume.analyzer.model.User;
+import com.resume.analyzer.repository.ResumeRepository;
+import com.resume.analyzer.repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api")
 public class AnalyzeController {
@@ -23,9 +29,16 @@ public class AnalyzeController {
     @Autowired
     private SkillAnalyzerService skillAnalyzerService;
 
+    @Autowired
+    private ResumeRepository resumeRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/analyze")
     public ResponseEntity<?> analyzeResume(@RequestParam(value = "file", required = false) MultipartFile file, 
-                                          @RequestParam(value = "jobRole", required = false) String jobRole) {
+                                          @RequestParam(value = "jobRole", required = false) String jobRole,
+                                          HttpSession session) {
         
         System.out.println("File received: " + (file != null ? file.getOriginalFilename() : "null"));
         System.out.println("Job role received: " + jobRole);
@@ -53,6 +66,28 @@ public class AnalyzeController {
             response.put("missingSkills", missingSkills);
             response.put("suggestions", suggestions);
             response.put("readiness", readiness);
+
+            // Optional: Save to database and associate with user if logged in
+            try {
+                Resume resume = new Resume();
+                resume.setFileName(file.getOriginalFilename());
+                resume.setJobRole(jobRole);
+                resume.setExtractedText(extractedText);
+                resume.setScore(score);
+                resume.setReadinessLevel(readiness);
+                resume.setFoundSkills(matchedSkills);
+                resume.setMissingSkills(missingSkills);
+                resume.setSuggestions(suggestions);
+
+                User user = (User) session.getAttribute("user");
+                if (user != null) {
+                    User managedUser = userRepository.findById(user.getId()).orElse(null);
+                    resume.setUser(managedUser);
+                }
+                resumeRepository.save(resume);
+            } catch (Exception e) {
+                System.out.println("Warning: Failed to save resume to database: " + e.getMessage());
+            }
 
             return ResponseEntity.ok(response);
 
