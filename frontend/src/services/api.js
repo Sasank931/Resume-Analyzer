@@ -2,8 +2,13 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-// Remove trailing slash if present
-const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+// Safely handle base URL and remove trailing slash if it exists
+const getBaseUrl = () => {
+  if (!API_BASE_URL) return 'http://localhost:8080';
+  return API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+};
+
+const baseUrl = getBaseUrl();
 
 const api = axios.create({
   baseURL: `${baseUrl}/api`,
