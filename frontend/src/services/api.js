@@ -1,15 +1,21 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+// Remove trailing slash if present
+const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: `${baseUrl}/api`,
 });
 
 export const analyzerService = {
   analyze: async (formData) => {
+    const fullUrl = `${baseUrl}/api/analyze`;
+    console.log("API URL:", fullUrl);
+    
     try {
-      const response = await fetch(`${API_URL}/api/analyze`, {
+      const response = await fetch(fullUrl, {
         method: "POST",
         body: formData,
       });
