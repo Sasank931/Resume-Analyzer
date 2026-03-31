@@ -11,11 +11,16 @@ public class SkillAnalyzerService {
     private final Map<String, List<String>> jobSkillsMap = new HashMap<>();
 
     public SkillAnalyzerService() {
-        jobSkillsMap.put("Software Developer", Arrays.asList("Java", "Spring Boot", "MySQL", "Git", "REST API"));
-        jobSkillsMap.put("Frontend Developer", Arrays.asList("HTML", "CSS", "JavaScript", "React", "Bootstrap"));
-        jobSkillsMap.put("Backend Developer", Arrays.asList("Java", "Spring Boot", "Database", "API", "Security"));
-        jobSkillsMap.put("Data Analyst", Arrays.asList("Python", "SQL", "Excel", "Power BI", "Statistics"));
-        jobSkillsMap.put("DevOps Engineer", Arrays.asList("Linux", "Docker", "CI/CD", "AWS", "Git"));
+        jobSkillsMap.put("Software Developer", Arrays.asList("Java", "Spring Boot", "MySQL", "Git", "REST API", "Unit Testing", "Microservices"));
+        jobSkillsMap.put("Data Scientist", Arrays.asList("Python", "R", "SQL", "Machine Learning", "Statistics", "Pandas", "Scikit-learn"));
+        jobSkillsMap.put("Web Developer", Arrays.asList("HTML", "CSS", "JavaScript", "React", "Node.js", "Express", "MongoDB"));
+        jobSkillsMap.put("Java Developer", Arrays.asList("Java", "Spring Boot", "Hibernate", "Maven", "JPA", "JUnit", "SQL"));
+        jobSkillsMap.put("Python Developer", Arrays.asList("Python", "Django", "Flask", "PostgreSQL", "API", "Pytest", "Git"));
+        jobSkillsMap.put("Machine Learning Engineer", Arrays.asList("Python", "TensorFlow", "PyTorch", "MLOps", "Deep Learning", "NLP", "Computer Vision"));
+        jobSkillsMap.put("Frontend Developer", Arrays.asList("HTML", "CSS", "JavaScript", "React", "TypeScript", "Redux", "Bootstrap"));
+        jobSkillsMap.put("Backend Developer", Arrays.asList("Java", "Spring Boot", "Node.js", "SQL", "Redis", "Docker", "Microservices"));
+        jobSkillsMap.put("DevOps Engineer", Arrays.asList("Linux", "Docker", "Kubernetes", "CI/CD", "AWS", "Terraform", "Jenkins"));
+        jobSkillsMap.put("Cybersecurity Analyst", Arrays.asList("Networking", "Firewalls", "IDS/IPS", "Ethical Hacking", "SIEM", "Security Compliance", "Vulnerability Assessment"));
     }
 
     public List<String> getRequiredSkills(String jobRole) {

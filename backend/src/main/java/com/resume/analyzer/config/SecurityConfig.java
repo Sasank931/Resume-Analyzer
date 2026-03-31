@@ -22,10 +22,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable()) // Disabling CSRF for simplicity in session-based auth
+            .csrf(csrf -> csrf.disable()) // Disabling CSRF for simplicity
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/resume/**").authenticated()
                 .anyRequest().permitAll()
             )
             .httpBasic(basic -> basic.disable())
