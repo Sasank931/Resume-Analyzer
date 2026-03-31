@@ -11,9 +11,9 @@ public class HomeController {
     @GetMapping("/")
     public Map<String, String> getStatus() {
         Map<String, String> status = new HashMap<>();
-        status.put("status", "success");
-        status.put("message", "Resume Analyzer Backend is Running Successfully");
-        status.put("version", "1.0.0");
+        status.put("status", "online");
+        status.put("message", "Resume Analyzer Backend - Version 1.0.1 - Running Successfully");
+        status.put("endpoints", "/api/analyze (POST)");
         return status;
     }
 }
