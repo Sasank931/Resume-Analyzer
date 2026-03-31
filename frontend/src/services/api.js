@@ -2,10 +2,15 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-// Safely handle base URL and remove trailing slash if it exists
+// Aggressively clean the base URL: remove trailing slashes and dots
 const getBaseUrl = () => {
   if (!API_BASE_URL) return 'http://localhost:8080';
-  return API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+  let url = API_BASE_URL.trim();
+  // Remove trailing slashes and dots
+  while (url.endsWith('/') || url.endsWith('.')) {
+    url = url.slice(0, -1);
+  }
+  return url;
 };
 
 const baseUrl = getBaseUrl();
@@ -17,7 +22,7 @@ const api = axios.create({
 export const analyzerService = {
   analyze: async (formData) => {
     const fullUrl = `${baseUrl}/api/analyze`;
-    console.log("API URL:", fullUrl);
+    console.log("Constructed API URL:", fullUrl);
     
     try {
       const response = await fetch(fullUrl, {
@@ -32,9 +37,13 @@ export const analyzerService = {
 
       return await response.json();
     } catch (error) {
-      console.error("Analysis failed:", error);
+      console.error("Analysis network error:", error);
       if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-        throw new Error(`Unable to reach the backend at ${fullUrl}. Please ensure your VITE_API_BASE_URL is correct and the backend is running on Railway.`);
+        throw new Error(`Unable to reach the backend at ${fullUrl}. 
+        Please check:
+        1. VITE_API_BASE_URL environment variable (current: ${baseUrl})
+        2. Backend status on Railway (should be running)
+        3. CORS settings on the backend`);
       }
       throw error;
     }

@@ -33,16 +33,21 @@ public class AnalyzeController {
     public ResponseEntity<?> analyzeResume(@RequestParam(value = "file", required = false) MultipartFile file, 
                                           @RequestParam(value = "jobRole", required = false) String jobRole) {
         
+        System.out.println("--- Analysis Request Start ---");
         System.out.println("File received: " + (file != null ? file.getOriginalFilename() : "null"));
         System.out.println("Job role received: " + jobRole);
 
-        if (file == null || file.isEmpty() || jobRole == null || jobRole.isEmpty()) {
-            return ResponseEntity.badRequest().body("File or jobRole missing");
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body("No file provided. Please select a resume to upload.");
+        }
+        
+        if (jobRole == null || jobRole.isEmpty()) {
+            return ResponseEntity.badRequest().body("No job role selected. Please select a target role.");
         }
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.equals("application/pdf")) {
-            return ResponseEntity.badRequest().body("Please upload a valid PDF resume.");
+            return ResponseEntity.badRequest().body("Unsupported file type: " + (contentType != null ? contentType : "unknown") + ". Please upload a PDF.");
         }
 
         try {
