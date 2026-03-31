@@ -16,6 +16,7 @@ import com.resume.analyzer.model.Resume;
 import com.resume.analyzer.repository.ResumeRepository;
 
 @RestController
+@RequestMapping("/api")
 public class AnalyzeController {
 
     @Autowired
@@ -27,12 +28,12 @@ public class AnalyzeController {
     @Autowired
     private ResumeRepository resumeRepository;
 
-    @GetMapping({"/api/process-resume", "/api/analyze"})
+    @GetMapping({"/process-resume", "/analyze"})
     public ResponseEntity<String> testAnalyzeGet() {
-        return ResponseEntity.ok("Resume processing endpoint is live! Use POST method to analyze. (Current path: /api/process-resume)");
+        return ResponseEntity.ok("Resume processing endpoint is live! Use POST method to analyze.");
     }
 
-    @PostMapping({"/api/process-resume", "/api/analyze"})
+    @PostMapping({"/process-resume", "/analyze"})
     public ResponseEntity<?> analyzeResume(@RequestParam(value = "file", required = false) MultipartFile file, 
                                           @RequestParam(value = "jobRole", required = false) String jobRole) {
         
