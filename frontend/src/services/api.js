@@ -17,7 +17,7 @@ export const authService = {
       throw error;
     }
   },
-  register: async (username, email, password, fullName) => {
+  register: async (username, password, fullName) => {
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
@@ -25,7 +25,7 @@ export const authService = {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ username, email, password, fullName }),
+        body: JSON.stringify({ username, password, fullName }),
       });
 
       let data;
