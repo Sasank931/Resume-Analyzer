@@ -15,7 +15,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public void registerUser(String username, String email, String password, String fullName) {
         if (userRepository.findByUsername(username).isPresent()) {

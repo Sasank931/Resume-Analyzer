@@ -19,23 +19,41 @@ export const authService = {
   },
   register: async (username, email, password, fullName) => {
     try {
-      // Using fetch syntax as requested for the registration call to ensure compliance
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, email, password, fullName }),
       });
 
-      const data = await response.json();
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        data = { message: text || `Server error: ${response.status} ${response.statusText}` };
+      }
+
       if (!response.ok) {
         throw { response: { data } };
       }
       return data;
     } catch (error) {
       console.error("Registration failed:", error);
-      throw error;
+      if (error.response) {
+        throw error;
+      }
+      // Handle network errors (e.g. TypeError: Failed to fetch)
+      throw { 
+        response: { 
+          data: { 
+            message: "Unable to connect to the server. Please check your internet connection and ensure the backend is running." 
+          } 
+        } 
+      };
     }
   },
   logout: async () => {

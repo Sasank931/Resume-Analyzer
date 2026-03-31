@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { authService } from '../services/api';
 
 const Login = ({ setIsAuthenticated }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.success) {
+      setSuccess(location.state.success);
+      // Clear location state to prevent message from persisting on reload
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       await authService.login(username, password);
@@ -39,6 +50,12 @@ const Login = ({ setIsAuthenticated }) => {
             {error && (
               <div className="alert alert-danger border-0 rounded-3 mb-4 py-2">
                 <i className="bi bi-exclamation-triangle-fill me-2"></i> {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="alert alert-success border-0 rounded-3 mb-4 py-2">
+                <i className="bi bi-check-circle-fill me-2"></i> {success}
               </div>
             )}
             
