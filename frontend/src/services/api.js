@@ -22,7 +22,7 @@ const api = axios.create({
 export const analyzerService = {
   analyze: async (formData) => {
     const fullUrl = `${baseUrl}/api/analyze`;
-    console.log("Constructed API URL:", fullUrl);
+    console.log("Calling API:", fullUrl);
     
     try {
       const response = await fetch(fullUrl, {
