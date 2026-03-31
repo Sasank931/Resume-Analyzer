@@ -3,6 +3,8 @@ package com.resume.analyzer.service;
 import com.resume.analyzer.model.User;
 import com.resume.analyzer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,14 +15,20 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public void registerUser(String username, String password, String fullName) {
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public void registerUser(String username, String email, String password, String fullName) {
         if (userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already exists");
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already exists");
         }
 
         User user = new User();
         user.setUsername(username);
-        user.setPassword(password); // Storing plain text password for now since security is removed
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
         user.setFullName(fullName);
         user.setRole("ROLE_USER");
         userRepository.save(user);
@@ -28,6 +36,6 @@ public class UserService {
 
     public Optional<User> login(String username, String password) {
         return userRepository.findByUsername(username)
-                .filter(user -> user.getPassword().equals(password));
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 }

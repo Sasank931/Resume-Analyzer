@@ -4,6 +4,7 @@ import { authService } from '../services/api';
 
 const Register = () => {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
@@ -16,10 +17,11 @@ const Register = () => {
     setError('');
 
     try {
-      await authService.register(username, password, fullName);
+      await authService.register(username, email, password, fullName);
       navigate('/login', { state: { success: 'Registration successful! Please login.' } });
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed.');
+      console.error("Registration error:", err);
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -65,6 +67,18 @@ const Register = () => {
                   placeholder="Choose a username" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  required 
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label fw-bold small text-uppercase text-muted">Email Address</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  className="form-control form-control-lg border-0 bg-light rounded-3" 
+                  placeholder="Enter your email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required 
                 />
               </div>
