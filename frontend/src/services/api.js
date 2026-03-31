@@ -33,6 +33,9 @@ export const analyzerService = {
       return await response.json();
     } catch (error) {
       console.error("Analysis failed:", error);
+      if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
+        throw new Error(`Unable to reach the backend at ${fullUrl}. Please ensure your VITE_API_BASE_URL is correct and the backend is running on Railway.`);
+      }
       throw error;
     }
   },

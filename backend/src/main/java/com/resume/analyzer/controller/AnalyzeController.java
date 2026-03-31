@@ -80,7 +80,7 @@ public class AnalyzeController {
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Error reading PDF: " + e.getMessage()));
+            return ResponseEntity.badRequest().body("Error reading PDF: " + e.getMessage());
         }
     }
 }
