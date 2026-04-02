@@ -21,8 +21,8 @@ const api = axios.create({
 
 export const analyzerService = {
   analyze: async (formData) => {
-    const fullUrl = `${baseUrl}/api/analyze`;
-    console.log("Calling API:", fullUrl);
+    const fullUrl = `${baseUrl}/api/process-resume`;
+    console.log("Calling Processing API:", fullUrl);
     
     try {
       const response = await fetch(fullUrl, {
